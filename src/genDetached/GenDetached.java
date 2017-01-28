@@ -29,14 +29,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 
 /**
- * XML-Detached-Signature 예제 변형
- * 
- * @source <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/security/xmldsig/GenDetached.java"/>
- * @author <a href="mailto:modesty101@daum.net">김동규</a>
- * @since 2017
- */
-
-/**
  * This is a simple example of generating a Detached XML Signature using the JSR
  * 105 API. The resulting signature will look like (key and signature values
  * will be different):
@@ -84,6 +76,14 @@ import org.w3c.dom.Document;
  * </code>
  * </pre>
  */
+
+/**
+ * XML-Detached-Signature 예제 변형
+ * 
+ * @source <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/security/xmldsig/GenDetached.java"/>
+ * @author <a href="mailto:modesty101@daum.net">김동규</a>
+ * @since 2017
+ */
 public class GenDetached {
 
 	//
@@ -102,6 +102,7 @@ public class GenDetached {
 
 		// Create a Reference to an external URI that will be digested
 		// using the SHA1 digest algorithm
+		// How to create URI Path ? ==> http://modesty101.tistory.com/137
 		Reference ref = fac.newReference("file:/C:/eclipse/eclipse/signature_work/Detached/test.txt",
 				fac.newDigestMethod(DigestMethod.SHA1, null));
 
