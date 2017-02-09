@@ -3,6 +3,7 @@ package genDetached;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.URI;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -85,17 +86,25 @@ import org.w3c.dom.Document;
  * @since 2017
  */
 public class GenDetached {
-
 	//
 	// Synopsis: java GenDetached [output]
 	//
 	// where output is the name of the file that will contain the detached
 	// signature. If not specified, standard output is used.
 	//
-	public static void main(String[] args) throws Exception {
-		File f = new File("C:\\eclipse\\eclipse\\signature_work\\Detached\\test.txt");
+	public static void main(String args) throws Exception {
+		/* 로그 파일 생성 */
+		File file = new File("log.txt");
+		PrintStream printStream = new PrintStream(new FileOutputStream(file));
+		// PrintStream sysout = System.out;
+		// System.setOut(sysout);
+		// systme.err.println("error");
+		System.setOut(printStream);
+		
+		File f = new File(args);
 		URI u = f.toURI();
 		System.out.println("File to URI : " + u);
+		String URI = new String(u.toString());
 		// First, create a DOM XMLSignatureFactory that will be used to
 		// generate the XMLSignature and marshal it to DOM.
 		XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM");
@@ -103,7 +112,7 @@ public class GenDetached {
 		// Create a Reference to an external URI that will be digested
 		// using the SHA1 digest algorithm
 		// How to create URI Path ? ==> http://modesty101.tistory.com/137
-		Reference ref = fac.newReference("file:/C:/eclipse/eclipse/signature_work/Detached/test.txt",
+		Reference ref = fac.newReference(URI,
 				fac.newDigestMethod(DigestMethod.SHA1, null));
 
 		// Create the SignedInfo
@@ -144,12 +153,8 @@ public class GenDetached {
 
 		// output the resulting document
 		OutputStream os;
-		if (args.length > 0) {
-			os = new FileOutputStream(args[0]);
-		} else {
-			os = System.out;
-		}
-
+		os = new FileOutputStream(args+".xml");
+		
 		TransformerFactory tf = TransformerFactory.newInstance();
 		Transformer trans = tf.newTransformer();
 		trans.transform(new DOMSource(doc), new StreamResult(os));

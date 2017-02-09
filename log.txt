@@ -1,0 +1,11 @@
+File to URI : file:/C:/eclipse/eclipse/signature_work/Detached/test.txt
+Total file size : +4
+1234
+Hex : 
+31 32 33 34 
+
+Hex format : 7110eda4d09e062aa5e4a390b0a572ac0d2c0220
+Base64 Encoding format : cRDtpNCeBiql5KOQsKVyrA0sAiA=
+[#text: cRDtpNCeBiql5KOQsKVyrA0sAiA=]
+
+cRDtpNCeBiql5KOQsKVyrA0sAiA= 는 cRDtpNCeBiql5KOQsKVyrA0sAiA= 와 같다 :true
