@@ -56,7 +56,7 @@ public class GUI extends JFrame implements ActionListener {
 			int result = chooser.showOpenDialog(this);
 			if (result == JFileChooser.APPROVE_OPTION) {
 				try {
-					GenDetached.main(chooser.getSelectedFile().toString());
+					GenDetached.main(chooser.getSelectedFile().getName());
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -69,15 +69,14 @@ public class GUI extends JFrame implements ActionListener {
 			if (result == JFileChooser.APPROVE_OPTION) {
 				boolean flag = false;
 				try {
-					flag = ExtractDetached.main(chooser.getSelectedFile().toString());
-
+					flag = ExtractDetached.main(chooser.getSelectedFile().getName());
+					
 					if (flag == true) {
 						JOptionPane.showMessageDialog(null, "Valid OK");
 					} else {
-						JOptionPane.showMessageDialog(null, "Valid NOT OK!!");
+						JOptionPane.showMessageDialog(null, "Valid NO");
 					}
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 

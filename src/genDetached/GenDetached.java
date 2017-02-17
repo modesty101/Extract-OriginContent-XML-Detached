@@ -81,80 +81,76 @@ import org.w3c.dom.Document;
 /**
  * XML-Detached-Signature 예제 변형
  * 
- * @source <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/security/xmldsig/GenDetached.java"/>
+ * @source <a href=
+ *         "https://docs.oracle.com/javase/7/docs/technotes/guides/security/xmldsig/GenDetached.java"/>
  * @author <a href="mailto:modesty101@daum.net">김동규</a>
  * @since 2017
  */
 public class GenDetached {
-	//
-	// Synopsis: java GenDetached [output]
-	//
-	// where output is the name of the file that will contain the detached
-	// signature. If not specified, standard output is used.
-	//
+
 	public static void main(String args) throws Exception {
 		/* 로그 파일 생성 */
 		File file = new File("log.txt");
 		PrintStream printStream = new PrintStream(new FileOutputStream(file));
-		// PrintStream sysout = System.out;
-		// System.setOut(sysout);
-		// systme.err.println("error");
 		System.setOut(printStream);
-		
+
 		File f = new File(args);
 		URI u = f.toURI();
 		System.out.println("File to URI : " + u);
 		String URI = new String(u.toString());
-		// First, create a DOM XMLSignatureFactory that will be used to
-		// generate the XMLSignature and marshal it to DOM.
+		
+		// XMLSignatureFactoy 객체에 DOM 인스턴스를 받아온다.
 		XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM");
 
-		// Create a Reference to an external URI that will be digested
-		// using the SHA1 digest algorithm
-		// How to create URI Path ? ==> http://modesty101.tistory.com/137
-		Reference ref = fac.newReference(URI,
-				fac.newDigestMethod(DigestMethod.SHA1, null));
+		/*
+		 *  레퍼런스를 생성한다. 외부 URI는 SHA1으로 다이제스트될 것이다.
+		 *  How to create URI Path ? ==> http://modesty101.tistory.com/137
+		 */
+		Reference ref = fac.newReference(URI, fac.newDigestMethod(DigestMethod.SHA1, null));
 
-		// Create the SignedInfo
+		// SignedInfo 객체 생성, xmlns 속성이 포함된다.
 		SignedInfo si = fac.newSignedInfo(
 				fac.newCanonicalizationMethod(CanonicalizationMethod.INCLUSIVE_WITH_COMMENTS,
 						(C14NMethodParameterSpec) null),
-				fac.newSignatureMethod(SignatureMethod.DSA_SHA1, null), Collections.singletonList(ref));
+				fac.newSignatureMethod(SignatureMethod.RSA_SHA1, null), Collections.singletonList(ref));
 
-		// Create a DSA KeyPair
-		KeyPairGenerator kpg = KeyPairGenerator.getInstance("DSA");
+		// RSA 키 생성
+		KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
 		kpg.initialize(512);
 		KeyPair kp = kpg.generateKeyPair();
 
-		// Create a KeyValue containing the DSA PublicKey that was generated
+		// RSA 공개키를 KeyValue에 포함한다.
 		KeyInfoFactory kif = fac.getKeyInfoFactory();
 		KeyValue kv = kif.newKeyValue(kp.getPublic());
 
-		// Create a KeyInfo and add the KeyValue to it
+		// KeyInfo에 KeyValue를 추가한다.
 		KeyInfo ki = kif.newKeyInfo(Collections.singletonList(kv));
 
-		// Create the XMLSignature (but don't sign it yet)
+		// XML 시그니처 생성(아직 싸인 하지않음)
 		XMLSignature signature = fac.newXMLSignature(si, ki);
 
-		// Create the Document that will hold the resulting XMLSignature
+		// XML 시그니처의 결과가 들어갈 문서를 생성한다.
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setNamespaceAware(true); // must be set
 		Document doc = dbf.newDocumentBuilder().newDocument();
 
-		// Create a DOMSignContext and set the signing Key to the DSA
-		// PrivateKey and specify where the XMLSignature should be inserted
-		// in the target document (in this case, the document root)
+
+		/*
+		 * DOMSignContext 생성, RSA 개인키로 문서를 싸인한다.
+		 * 여기선, 문서의 루트에 추가된다. (Detached 시그니처의 특징)
+		 */
 		DOMSignContext signContext = new DOMSignContext(kp.getPrivate(), doc);
 
-		// Marshal, generate (and sign) the detached XMLSignature. The DOM
-		// Document will contain the XML Signature if this method returns
-		// successfully.
+		/*
+		 * detached 시그니처를 생성한다. DOM 문서는 XML 시그니처를 포함할 것이다.
+		 * (메소드 정상적으로 리턴 했다면..)
+		 */
 		signature.sign(signContext);
 
-		// output the resulting document
+		// 출력은 .xml 파일으로한다.
 		OutputStream os;
-		os = new FileOutputStream(args+".xml");
-		
+		os = new FileOutputStream(args + ".xml");
+
 		TransformerFactory tf = TransformerFactory.newInstance();
 		Transformer trans = tf.newTransformer();
 		trans.transform(new DOMSource(doc), new StreamResult(os));
